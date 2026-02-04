@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+// import { useRouter } from "next/router";
 import { Card } from "@/components/ui/card";
 import { supabase } from "../lib/supabase";
+import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -52,6 +54,7 @@ export const statusConfig = {
   },
 } as const;
 
+
 // Tipagem de chaves
 export type StatusPedido = keyof typeof statusConfig;
 
@@ -69,6 +72,8 @@ export type StatusPedido = keyof typeof statusConfig;
 //   { key: "status", label: "Status", width: "120px" },
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  const [loadingAuth, setLoadingAuth] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
@@ -195,10 +200,6 @@ export default function Home() {
   };
   
   
-
-  
-
-  
   return (
     <div className="min-h-screen bg-background">
       <div className="flex h-screen flex-col lg:flex-row">
@@ -308,6 +309,14 @@ export default function Home() {
               </div>
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  setLocation("/login");
+                }}>
+                Sair
               </Button>
             </div>
 
@@ -465,7 +474,7 @@ export default function Home() {
               <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground">Preço</p>
                   <p className="font-semibold text-foreground">
-                    {selectedPedido?.price}
+                  R$ {Number(selectedPedido?.price ?? 0).toFixed(2)}
                   </p>
                 </div>
 
