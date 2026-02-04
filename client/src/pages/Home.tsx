@@ -20,15 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ChevronRight,
-  Search,
-  Filter,
-  Package,
-  Truck,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-} from "lucide-react";
+  ChevronRight, Search, Filter, Package, Truck, CheckCircle, Clock, AlertCircle,} from "lucide-react";
 import { Pedido } from "@/types/types";
 
 
@@ -109,10 +101,22 @@ export default function Home() {
   }, []);
 
   const filteredPedidos = useMemo(() => {
+    const search = searchQuery.toLowerCase();
+  
     return pedidos.filter((pedido) => {
+      // converte todos os campos em string segura
+      const name = pedido.name?.toLowerCase() ?? "";
+      const instagram = pedido.instagram_user?.toLowerCase() ?? "";
+      const id = pedido.id?.toString() ?? "";
+      const address = pedido.address?.toLowerCase() ?? "";
+      const telefone = pedido.telefone?.toString() ?? "";
+  
       const matchesSearch =
-        pedido.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pedido.instagram_user?.toLowerCase().includes(searchQuery.toLowerCase());
+      name.includes(search) ||
+      instagram.includes(search) ||
+      id.includes(search) || 
+      address.includes(search) ||
+      telefone.includes(search);  
   
       const matchesStatus =
         statusFilter === "all" || pedido.status === statusFilter;
@@ -120,7 +124,9 @@ export default function Home() {
       return matchesSearch && matchesStatus;
     });
   }, [pedidos, searchQuery, statusFilter]);
+  
 
+  
   const stats = useMemo(() => {
     return {
       total: pedidos.length,
@@ -335,7 +341,7 @@ export default function Home() {
                       <TableHead className="text-center font-semibold text-foreground">
                         Preço Total
                       </TableHead>
-                      <TableHead className="w-45 text-center font-semibold text-foreground">
+                      <TableHead className=" w-45 text-center font-semibold text-foregroundtext-center font-semibold text-foreground">
                         Status
                       </TableHead>
                       <TableHead className="w-10"></TableHead>
@@ -376,19 +382,23 @@ export default function Home() {
                               {pedido.Qtd}
                             </TableCell>
                             <TableCell className="text-center font-semibold text-foreground">
-                            R$ {Number(pedido.total_price ?? 0).toFixed(2)}
+                              <div className="flex justify-center">
+                                R$ {Number(pedido.total_price ?? 0).toFixed(2)}
+                              </div>
                             </TableCell>
-                            <TableCell className="text-center ">
-                              <Badge
-                                className={`${statusInfo.color} flex w-fit items-center gap-1.5 px-2.5 py-1`}
-                              >
-                                <StatusIcon className="h-3.5 w-3.5 " />
-                                <span className="text-xs font-medium ">
-                                  {statusInfo.label}
-                                </span>
-                              </Badge>
-                            </TableCell>
-                            
+
+                            <TableCell className="text-center">
+                              <div className="flex justify-center">
+                                <Badge
+                                  className={`${statusInfo.color} flex items-center gap-1.5 px-2.5 py-1`}
+                                >
+                                  <StatusIcon className="h-3.5 w-3.5" />
+                                  <span className="text-xs font-medium">
+                                    {statusInfo.label}
+                                  </span>
+                                </Badge>
+                              </div>
+                            </TableCell> 
                             <TableCell>
                               <ChevronRight className="h-4 w-4 text-muted-foreground" />
                             </TableCell>
@@ -397,13 +407,14 @@ export default function Home() {
                       })
                     ) : (
                       <TableRow>
-                        <TableCell
-                          colSpan={10}
-                          className="py-8 text-center text-muted-foreground"
-                        >
-                          Nenhum pedido encontrado
-                        </TableCell>
-                      </TableRow>
+  <TableCell
+    colSpan={10}
+    className="py-8 text-center text-muted-foreground"
+  >
+    Nenhum pedido encontrado
+  </TableCell>
+</TableRow>
+
                     )}
                   </TableBody>
                 </Table>
@@ -421,7 +432,7 @@ export default function Home() {
       {/* Order Detail Modal - Simple overlay */}
       {selectedPedido && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center "
           onClick={() => setSelectedPedido(null)}
         >
           <Card
@@ -580,7 +591,7 @@ export default function Home() {
       
 {openStatusModal && selectedPedido && (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    className="fixed inset-0 z-50 flex items-center justify-center "
     onClick={() => setOpenStatusModal(false)}
   >
     <Card
@@ -634,7 +645,7 @@ export default function Home() {
       {/* Modal das Camisas */}
       {openItens && selectedPedido?.itens && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center "
           onClick={() => setOpenItens(false)}
         >
           <Card
