@@ -270,10 +270,10 @@ export default function Home() {
                 <SelectContent>
                   <SelectItem value="all">Todos os status</SelectItem>
                   <SelectItem value="AGUARDANDO_COMPROVANTE">Aguardando Comprovante</SelectItem>
-                  <SelectItem value="aprovado">Aprovado</SelectItem>
-                  <SelectItem value="enviado">Enviado</SelectItem>
-                  <SelectItem value="entregue">Entregue</SelectItem>
-                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                  <SelectItem value="APROVADO">Aprovado</SelectItem>
+                  <SelectItem value="ENVIADO">Enviado</SelectItem>
+                  <SelectItem value="ENTREGUE">Entregue</SelectItem>
+                  <SelectItem value="CANCELADO">Cancelado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -316,7 +316,7 @@ export default function Home() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b border-border hover:bg-transparent">
+                    <TableRow className="border-b border-border hover:bg-transparent align-middle">
                       <TableHead className="text-center font-semibold text-foreground">
                         ID do Pedido
                       </TableHead>
@@ -357,13 +357,13 @@ export default function Home() {
                         return (
                           <TableRow
                             key={pedido.id}
-                            className="text-center border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer"
+                            className="text-center border-b border-border hover:bg-secondary/30 transition-colors cursor-pointer align-middle "
                             onClick={() => setSelectedPedido(pedido)}
                           >
                             <TableCell className="font-mono text-sm font-medium text-foreground">
                               {pedido.id}
                             </TableCell>
-                            <TableCell className="text-center  text-sm text-foreground">
+                            <TableCell className="text-center text-sm text-foreground">
                               {pedido.comprovante}
                             </TableCell>
                             <TableCell className="text-center  text-sm text-foreground">
@@ -381,7 +381,7 @@ export default function Home() {
                             <TableCell className="text-center text-sm text-foreground">
                               {pedido.Qtd}
                             </TableCell>
-                            <TableCell className="text-center font-semibold text-foreground">
+                            <TableCell className="text-center align-middle font-semibold text-foreground">
                               <div className="flex justify-center">
                                 R$ {Number(pedido.total_price ?? 0).toFixed(2)}
                               </div>
@@ -407,13 +407,13 @@ export default function Home() {
                       })
                     ) : (
                       <TableRow>
-  <TableCell
-    colSpan={10}
-    className="py-8 text-center text-muted-foreground"
-  >
-    Nenhum pedido encontrado
-  </TableCell>
-</TableRow>
+                        <TableCell
+                          colSpan={10}
+                          className="py-8 text-center text-muted-foreground"
+                        >
+                          Nenhum pedido encontrado
+                        </TableCell>
+                        </TableRow>
 
                     )}
                   </TableBody>
