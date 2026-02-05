@@ -344,7 +344,7 @@ const removeTamanho = (index: number) => {
       const url = supabase.storage.from("camisas").getPublicUrl(fileName).data.publicUrl;
       return url;
     };
-
+    const qtdpedidos = Number(selectedPedido?.Qtd ?? 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -728,6 +728,7 @@ const removeTamanho = (index: number) => {
 
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground ">Quantidade</p>
+                  
                   <button
                     type="button"
                     onClick={(e) => {
@@ -736,8 +737,7 @@ const removeTamanho = (index: number) => {
                     }}
                     className="font-semibold text-primary hover:underline"
                   >
-                    {selectedPedido?.Qtd} Itens
-                    
+                  {qtdpedidos} {qtdpedidos === 1 ? "Item" : "Itens"}
                   </button>
                 </div>
 
