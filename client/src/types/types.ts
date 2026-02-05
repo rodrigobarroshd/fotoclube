@@ -29,3 +29,17 @@ export interface User {
     // itens?: Record<string, any>[] | null // jsonb[]
     itens?: PedidoItem[] | null
   }
+  
+  export type CamisaTamanho = {
+    tamanho: string;
+    estoque: number;
+  };
+  export interface Camisa {
+    id: number;
+    nome: string;
+    tamanhos: CamisaTamanho[]; 
+    price: number;
+    estoque: number;
+    image: string;
+  }
+  
