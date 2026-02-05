@@ -89,6 +89,9 @@ export default function Home() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [camisas, setCamisas] = useState<Camisa[]>([]);
   const [nome, setNome] = useState("");
+  const [account, setAccount] = useState("");
+  const [frete, setFrete] = useState(0);
+  const [pontoEntrega, setPontoEntrega] = useState("");
   const [tamanho, setTamanho] = useState("");
   const [price, setPrice] = useState(0);
   const [estoque, setEstoque] = useState(0);
@@ -258,6 +261,7 @@ const removeTamanho = (index: number) => {
     fetchCamisas();
   }, []);
   type CamisaEdit = Camisa & { imagemFile?: File };
+
   const handleCreateCamisa = async () => {
     if (!nome || price <= 0 || estoqueTotal <= 0) {
       alert("Preencha nome, preço e estoque corretamente!");
@@ -280,6 +284,9 @@ const removeTamanho = (index: number) => {
       image: uploadedUrl,
       estoque: estoqueTotal,
       tamanhos: camisaTamanhos,
+      ponto_entrega: pontoEntrega,
+      frete,
+      account
     };
   
     try {
@@ -305,57 +312,20 @@ const removeTamanho = (index: number) => {
       alert("Erro ao criar camisa, veja o console.");
     }
   };
-  
-  // const handleCreateCamisa = async () => {
-  //   if (!nome || price <= 0 || estoqueTotal <= 0) {
-  //     alert("Preencha nome, preço e estoque corretamente!");
-  //     return;
-  //   }
-  
-  //   const novaCamisa: Omit<Camisa, "id"> = {
-  //     nome,
-  //     price,
-  //     image: imagemUrl ?? "",
-  //     estoque: estoqueTotal,
-  //     tamanhos: camisaTamanhos,
-  //   };
-  
-  //   try {
-  //     const { data, error } = await supabase
-  //       .from("camisas")
-  //       .insert([novaCamisa])
-  //       .select(); // retorna o registro criado com id
-  
-  //     if (error) throw error;
-  
-  //     // Atualiza o estado local
-  //     setCamisas([...camisas, data[0]]);
-  
-  //     // Fecha modal e limpa campos
-  //     setOpenCreateCamisaModal(false);
-  //     setNome("");
-  //     setPrice(0);
-  //     setCamisaTamanhos([{ tamanho: "", estoque: 0 }]);
-  //     setEstoqueTotal(0);
-  
-  //     console.log("Camisa criada com sucesso:", data[0]);
-  //   } catch (err) {
-  //     console.error("Erro ao criar camisa:", err);
-  //     alert("Erro ao criar camisa, veja o console.");
-  //   }
-  // };
+
 
 
   const [selectedCamisa, setSelectedCamisa] = useState<Camisa | null>(null);
-  
-  const handleEditCamisa = (c: Camisa) => {
-    setSelectedCamisa(c);
-    setEditNome(c.nome);
-    setEditPrice(c.price);
-    setEditCamisaTamanhos(c.tamanhos);
-    const total = c.tamanhos.reduce((acc, t) => acc + t.estoque, 0);
-    setEditEstoqueTotal(total);
-  };
+  const [openManageCamisasModal, setOpenManageCamisasModal] = useState(false);
+
+  // const handleEditCamisa = (c: Camisa) => {
+  //   setSelectedCamisa(c);
+  //   setEditNome(c.nome);
+  //   setEditPrice(c.price);
+  //   setEditCamisaTamanhos(c.tamanhos);
+  //   const total = c.tamanhos.reduce((acc, t) => acc + t.estoque, 0);
+  //   setEditEstoqueTotal(total);
+  // };
   const [imagemFile, setImagemFile] = useState<File | null>(null);
   const [imagemUrl, setImagemUrl] = useState<string | null>(null);
 
@@ -389,7 +359,7 @@ const removeTamanho = (index: number) => {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-sidebar-foreground">
-                  Pedidos
+                  FotoClub
                 </h1>
                 <p className="text-xs text-sidebar-foreground/60">
                   Loja de Camisas
@@ -630,6 +600,7 @@ const removeTamanho = (index: number) => {
                 </Table>
               </div>
             </Card>
+
             // Camisas Table
               ) : (<div> <Card className="overflow-hidden border border-border shadow-sm">
               <div className="overflow-x-auto">
@@ -641,6 +612,8 @@ const removeTamanho = (index: number) => {
                       <TableHead className="text-center font-semibold text-foreground">Imagem</TableHead>
                       <TableHead className="text-center font-semibold text-foreground">Nome</TableHead>
                       <TableHead className="text-center font-semibold text-foreground">Preço</TableHead>
+                      <TableHead className="text-center font-semibold text-foreground">Frete</TableHead>
+                      <TableHead className="text-center font-semibold text-foreground">Ponto de Entrega</TableHead>
                       <TableHead className="text-center font-semibold text-foreground">Estoque</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -662,6 +635,8 @@ const removeTamanho = (index: number) => {
                           </TableCell>
                           <TableCell>{c.nome}</TableCell>
                           <TableCell>R${c.price.toFixed(2)}</TableCell>
+                          <TableCell>R${c.frete.toFixed(2)}</TableCell>
+                          <TableCell>{c.ponto_entrega}</TableCell>
                           <TableCell>{c.estoque}</TableCell>
                         </TableRow>
                       ))
@@ -678,11 +653,21 @@ const removeTamanho = (index: number) => {
               </Card>
               </div>
               )}
-            <div className="flex justify-end mb-2">
-              <Button onClick={() => setOpenCreateCamisaModal(true)}>
-                Criar Camisa
-              </Button>
-            </div>
+
+              {currentView === "camisas" && (
+                <div className="flex justify-end mb-2 gap-2">
+                  <Button onClick={() => setOpenCreateCamisaModal(true)}>
+                    Criar Camisa
+                  </Button>
+                  <Button
+                    className="bg-red-500"
+                    onClick={() => setOpenManageCamisasModal(true)}
+                  >
+                    Gerenciar Camisas
+                  </Button>
+                </div>
+              )}
+
             {/* Results Info */}
             {currentView === "pedidos" && (
               <div className="text-sm text-muted-foreground">
@@ -745,10 +730,14 @@ const removeTamanho = (index: number) => {
                   <p className="text-xs font-medium text-muted-foreground ">Quantidade</p>
                   <button
                     type="button"
-                    onClick={() => setOpenItens(true)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenItens(true);
+                    }}
                     className="font-semibold text-primary hover:underline"
                   >
                     {selectedPedido?.Qtd} Itens
+                    
                   </button>
                 </div>
 
@@ -926,23 +915,41 @@ const removeTamanho = (index: number) => {
             >
               <div className="space-y-4 p-4">
 
-                <div className="flex items-center justify-between">
-                  <Input
-                    value={selectedCamisa.nome}
-                    onChange={(e) =>
-                      setSelectedCamisa({ ...selectedCamisa, nome: e.target.value })
-                    }
-                    placeholder="Nome da Camisa"
-                    className="font-bold text-lg w-full"
-                  />
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedCamisa(null)}>
+              <div className="flex items-start gap-2">
+                  <div className="flex-1 flex flex-col gap-3">
+                    <p className="text-xs font-medium text-muted-foreground">Nome</p>
+                    <Input
+                      value={selectedCamisa.nome}
+                      onChange={(e) =>
+                        setSelectedCamisa({ ...selectedCamisa, nome: e.target.value })
+                      }
+                      placeholder="Nome da Camisa"
+                      className="font-bold text-lg w-full"
+                    />
+                    <p className="text-xs font-medium text-muted-foreground">Ponto de Entrega</p>
+                    <Input
+                      value={selectedCamisa.ponto_entrega}
+                      onChange={(e) =>
+                        setSelectedCamisa({ ...selectedCamisa, ponto_entrega: e.target.value })
+                      }
+                      placeholder="Ponto de Entrega"
+                      className="font-bold text-lg w-full"
+                    />
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedCamisa(null)}
+                    className="mt-6" 
+                  >
                     ✕
                   </Button>
                 </div>
-                <div className="mt-2">
-           <p className="text-xs font-medium text-muted-foreground">Imagem</p>
 
-              {/* Mostra prévia se já existir */}
+                <div className="mt-2">
+                  <p className="text-xs font-medium text-muted-foreground">Imagem</p>
+
               {selectedCamisa.image && (
                 <img
                   src={selectedCamisa.image}
@@ -964,7 +971,7 @@ const removeTamanho = (index: number) => {
              </div>
 
                 <div className="grid grid-cols-2 gap-6 border-t border-border pt-4">
-                  <div className="space-y-1">
+                  <div className="space-y-3">
                     <p className="text-xs font-medium text-muted-foreground">Preço Unitário</p>
                     <Input
                       type="number"
@@ -976,14 +983,51 @@ const removeTamanho = (index: number) => {
                         })
                       }
                     />
+                    <p className="text-xs font-medium text-muted-foreground">Frete</p>
+                    <Input
+                      type="number"
+                      value={selectedCamisa.frete}
+                      onChange={(e) =>
+                        setSelectedCamisa({
+                          ...selectedCamisa,
+                          price: Number(e.target.value),
+                        })
+                      }
+                    />
                   </div>
-                  <div className="space-y-1">
+
+
+                  <div className="space-y-3">
+                 
+                      <p className="text-xs font-medium text-muted-foreground">Conta Bancária</p>
+                      <Input
+                        value={selectedCamisa.account || ""}
+                        onChange={(e) =>
+                          setSelectedCamisa({
+                            ...selectedCamisa,
+                            account: e.target.value,
+                          })
+                        }
+                      />
                     <p className="text-xs font-medium text-muted-foreground">Estoque Total</p>
-                    <p className="font-semibold text-foreground">
-                      {selectedCamisa.tamanhos.reduce((acc, t) => acc + t.estoque, 0)}
+                    <p className="h-10 flex items-center font-semibold text-foreground">
+                    {(() => {
+                      const total = selectedCamisa.tamanhos.reduce(
+                        (acc, t) => acc + t.estoque,
+                        0
+                      );
+
+                      return (
+                        <span>
+                          {total} {total === 1 ? "camisa" : "camisas"}
+                        </span>
+                      );
+                    })()}
+
                     </p>
                   </div>
                 </div>
+             
 
                 <div className="border-t border-border pt-4 space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">Tamanhos</p>
@@ -1065,6 +1109,9 @@ const removeTamanho = (index: number) => {
                           image: uploadedUrl,
                           estoque: selectedCamisa.tamanhos.reduce((acc, t) => acc + t.estoque, 0),
                           tamanhos: selectedCamisa.tamanhos,
+                          ponto_entrega: selectedCamisa.ponto_entrega,
+                          frete: selectedCamisa.frete,
+                          account: selectedCamisa.account,
                         })
                         .eq("id", selectedCamisa.id)
                         .select();
@@ -1091,7 +1138,44 @@ const removeTamanho = (index: number) => {
           </div>
         )}
 
+        {/*  Modal Tamanhos da Camisa */}
+        {openItens && selectedPedido && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center "
+          onClick={() => setOpenItens(false)}
+        >
+          <Card
+            className="w-full max-w-sm p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold mb-4">Itens do Pedido</h3>
 
+            <div className="space-y-2">
+              {selectedPedido.itens?.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border-b border-border pb-2"
+                >
+                  <div className="flex items-center gap-2 text-base">
+                    <span className="text-muted-foreground">Tamanho</span>
+                    <span className="font-semibold">{item.tamanho}</span>
+                  </div>
+                  <span className="font-semibold">
+                    {item.quantidade}{" "}
+                    {item.quantidade === 1 ? "camisa" : "camisas"}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <Button variant="outline" onClick={() => setOpenItens(false)}>
+                Fechar
+              </Button>
+            </div>
+          </Card>
+        </div>
+        )}
 
 
 
@@ -1198,6 +1282,108 @@ const removeTamanho = (index: number) => {
     </Card>
   </div>
 )}
+
+
+{openManageCamisasModal && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    onClick={() => setOpenManageCamisasModal(false)}
+  >
+    <Card
+      className="w-full max-w-3xl p-6"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="text-lg font-bold mb-4">Gerenciar Camisas</h3>
+
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Imagem</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead>Preço</TableHead>
+              <TableHead>Estoque</TableHead>
+              <TableHead>Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {camisas.length > 0 ? (
+              camisas.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell>{c.id}</TableCell>
+                  <TableCell>
+                    {c.image && (
+                      <img
+                        src={c.image}
+                        alt={c.nome}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>{c.nome}</TableCell>
+                  <TableCell>R${c.price.toFixed(2)}</TableCell>
+                  <TableCell>{c.estoque}</TableCell>
+                  <TableCell className="flex gap-2 justify-center">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCamisa(c);
+                        setOpenManageCamisasModal(false);
+                      }}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={async () => {
+                        if (!confirm("Tem certeza que deseja excluir esta camisa?")) return;
+
+                        const { error } = await supabase
+                          .from("camisas")
+                          .delete()
+                          .eq("id", c.id);
+
+                        if (error) {
+                          console.error(error);
+                          alert("Erro ao excluir a camisa");
+                        } else {
+                          setCamisas((prev) =>
+                            prev.filter((cam) => cam.id !== c.id)
+                          );
+                        }
+                      }}
+                    >
+                      Excluir
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                  Nenhuma camisa encontrada
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <Button
+          variant="outline"
+          onClick={() => setOpenManageCamisasModal(false)}
+        >
+          Fechar
+        </Button>
+      </div>
+    </Card>
+  </div>
+)}
+
 </div>
   );
 }

@@ -41,5 +41,8 @@ export interface User {
     price: number;
     estoque: number;
     image: string;
+    account: string;
+    frete: number;
+    ponto_entrega: string;
   }
   
