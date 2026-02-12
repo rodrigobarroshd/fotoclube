@@ -500,7 +500,7 @@ const removeTamanho = (index: number) => {
                       <TableHead className="text-center font-semibold text-foreground">
                         ID do Pedido
                       </TableHead>
-                      <TableHead className="text-center  font-semibold text-foreground">
+                      <TableHead className="text-center  font-semibold text-foreground max-w-14.5 truncate">
                         Comprovante
                       </TableHead>
                       <TableHead className="text-center  font-semibold text-foreground">
@@ -543,7 +543,7 @@ const removeTamanho = (index: number) => {
                             <TableCell className="font-mono text-sm font-medium text-foreground">
                               {pedido.id}
                             </TableCell>
-                            <TableCell className="text-center text-sm text-foreground">
+                            <TableCell className="text-center text-sm text-foreground max-w-14.5 truncate">
                               {pedido.comprovante}
                             </TableCell>
                             <TableCell className="text-center  text-sm text-foreground">
@@ -983,6 +983,7 @@ const removeTamanho = (index: number) => {
                         })
                       }
                     />
+
                     <p className="text-xs font-medium text-muted-foreground">Frete</p>
                     <Input
                       type="number"
@@ -990,7 +991,7 @@ const removeTamanho = (index: number) => {
                       onChange={(e) =>
                         setSelectedCamisa({
                           ...selectedCamisa,
-                          price: Number(e.target.value),
+                          frete: Number(e.target.value),
                         })
                       }
                     />
